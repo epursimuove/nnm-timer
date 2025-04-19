@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NNM Timer - Documentation</title>
+
+    <link rel="stylesheet" href="timer.css">
+</head>
+
+<body>
+
+<h1>NNM Timer - Documentation</h1>
+
+<p>
+    Start the app by opening the timer in a new separate window.
+</p>
+
+<div>
+    <button id="open-timer">
+        Open <em>NNM Timer</em> in new window
+    </button>
+</div>
+
+</body>
+
+<script>
+    const openSeparately = () => {
+        const url = './timer.html';
+        window.open(url, 'window', 'toolbar=no, menubar=no, location=no, titlebar=no, resizable=yes, width=235, height=325');
+    };
+
+    document.getElementById("open-timer")
+        .addEventListener("click", (event) => openSeparately());
+</script>
+
+</html>

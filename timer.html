@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NNM Timer</title>
+
+    <link rel="stylesheet" href="timer.css">
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+    <script src="timer.js" defer></script>
+
+</head>
+
+
+<body id="timer">
+
+<div class="content-wrapper"
+     :class="{
+      'timer-finished': timer.state.finished,
+       running: timer.state.running
+        }"
+>
+
+    <nav>
+        <a href="#"
+           @click="currentPage = 'timer'"
+           :class="{active: currentPage === 'timer'}">
+            Timer
+        </a>
+
+        <a href="#"
+           @click="currentPage = 'configuration'"
+           :class="{active: currentPage === 'configuration'}">
+            Configuration
+        </a>
+    </nav>
+
+
+    <main>
+
+        <template v-if="currentPage === 'configuration'">
+
+            <form>
+                <div class="configuration-setting">
+                    <label for="minutesConfiguration">
+                        Minutes
+                    </label>
+
+                    <input id="minutesConfiguration"
+                           type="number"
+                           min="0"
+                           max="180"
+                           v-model="timer.configuration.minutesConfigured"
+                           @change="minutesChanged()"
+                           @keyup="minutesChanged()"
+                    >
+                </div>
+
+                <div class="configuration-setting">
+                    <label for="secondsConfiguration">
+                        Seconds
+                    </label>
+
+                    <input id="secondsConfiguration"
+                           type="number"
+                           min="0"
+                           max="59"
+                           v-model="timer.configuration.secondsConfigured"
+                           @change="secondsChanged()"
+                           @keyup="secondsChanged()"
+                    >
+                </div>
+
+                <div class="configuration-setting">
+                    <input id="singleValueVariant"
+                           type="checkbox"
+                           v-model="timer.configuration.singleValueVariant"
+                    >
+
+                    <label for="singleValueVariant">
+                        Single value variant
+                    </label>
+                </div>
+
+                <div class="buttons">
+                    <button type="button"
+                            @click="openSeparately()"
+                    >
+                        Open in new window
+                    </button>
+                </div>
+            </form>
+        </template>
+
+
+        <template v-if="currentPage === 'timer'">
+
+            <!--
+                    <pre>
+                        {{timer}}
+                    </pre>
+            -->
+
+            <div class="info-block">
+
+                <div class="info-row">
+                    <div>
+                        Configuration
+                    </div>
+
+                    <div>
+                        {{actualConfiguration}}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div>
+                        Elapsed time
+                    </div>
+
+                    <div>
+                        {{timeElapsed}}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div>
+                        Timer started
+                    </div>
+
+                    <div>
+                        {{timerStartTime}}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div>
+                        Current time
+                    </div>
+
+                    <div>
+                        {{currentZuluTime}}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="current-timer-value"
+                 :class="{ 'timer-paused': timer.state.pausedTime || timer.state.finished }">
+
+                <div v-if="timer.state.finished" class="alarm-sounds">
+                    ⏰
+                </div>
+
+                <template v-else>
+
+                    <div v-if="!timer.configuration.singleValueVariant">
+                        {{currentTimerValue}}
+                    </div>
+
+                    <div v-if="timer.configuration.singleValueVariant">
+                        {{currentTimerValueSingle.value}}
+                        <small class="text-muted">{{currentTimerValueSingle.unit}}</small>
+                    </div>
+
+                </template>
+
+            </div>
+
+            <div class="buttons player">
+
+                <button type="button"
+                        class="btn btn-primary"
+                        @click="start()"
+                        :disabled="!timer.isStartable()"
+                        v-if="!timer.state.startTime || timer.state.pausedTime || timer.state.finished"
+                >
+
+                    <span v-if="timer.state.finished" title="Restart">
+                        ▶️
+                    </span>
+
+                    <span v-else-if="timer.state.pausedTime" title="Resume">
+                        ▶️
+                    </span>
+
+                    <span v-else title="Start">
+                        ▶️
+                    </span>
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        @click="pause()"
+                        :disabled="!timer.state.running"
+                        v-if="timer.state.startTime && !(timer.state.pausedTime || timer.state.finished)"
+                        title="Pause"
+                >
+                    ⏸️
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        @click="reset()"
+                        :disabled="timer.state.running || !(timer.configuration.minutesConfigured > 0 || timer.configuration.secondsConfigured > 0)"
+                        title="Reset"
+                >
+                    ↩️
+                </button>
+            </div>
+
+        </template>
+
+    </main>
+
+
+    <!--    Paused time: {{pausedTime}} ms-->
+
+    <footer>
+
+        <div>
+            <strong>NNM Timer</strong> <var>{{appVersion}}</var>
+        </div>
+
+        <div>
+            Vue <var>{{vueVersion}}</var>
+        </div>
+
+        <div>
+            &copy; 2019-{{currentYear}} Anders Gustafson
+        </div>
+    </footer>
+
+</div>
+
+
+</body>
+
+</html>
